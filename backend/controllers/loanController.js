@@ -1,5 +1,8 @@
 const Loan = require('../models/Loan');
 const User = require('../models/User');
+const logAudit = require('../utils/logAudit');
+
+// const { sendSmsNotification, sendEmailNotification } = require('../utils/sendNotification');
 
 // Get Loans
 exports.getLoans = async (req, res) => {
@@ -110,5 +113,30 @@ exports.calculateInterest = async (req, res) => {
     res.status(200).json({ message: 'Interest calculated successfully', interest });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Notify the customer of his loan repayment by email or sms. 
+// Logic to be edited later
+exports.notifyLoanRepayment = async (req, res) => {
+  const { loanId } = req.params;
+
+  try {
+    const loan = await Loan.findById(loanId).populate('borrower');
+    if (!loan) {
+      return res.status(404).json({ message: 'Loan not found' });
+    }
+
+    const message = `Dear ${loan.borrower.name}, your loan repayment of ${loan.amount} is due on ${loan.dueDate}.`;
+
+    // Send SMS
+    await sendSmsNotification(loan.borrower.phoneNumber, message);
+
+    // Send Email
+    await sendEmailNotification(loan.borrower.email, 'Loan Repayment Reminder', message);
+
+    res.status(200).json({ message: 'Notifications sent successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

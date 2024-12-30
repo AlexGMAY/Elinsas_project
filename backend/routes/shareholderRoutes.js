@@ -13,6 +13,7 @@ const {
   deleteShareholder,
   filterShareholdersByGroup,
   searchShareholdersByName,
+  notifyShareholderContribution,
 } = require('../controllers/shareholderController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 const { checkRole } = require('../middlewares/roleMiddleware');
@@ -40,5 +41,8 @@ router.get('/search-by-name', verifyToken, checkRole(['Admin']),  validateQueryP
 // Shareholder Modification Endpoints
 router.put('/:shareholderId', verifyToken, checkRole(['Admin']), updateShareholder);
 router.delete('/:shareholderId', verifyToken, checkRole(['Admin']), deleteShareholder);
+
+// Shareholder Notification
+router.post('/shareholder-contribution/:shareholderId', verifyToken, checkRole(['Admin']), notifyShareholderContribution);
 
 module.exports = router;

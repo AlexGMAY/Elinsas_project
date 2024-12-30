@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/dbConfig');
+// const scheduler = require('./utils/scheduler');
 
 
 // Routes Imports
@@ -10,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const loanRoutes = require('./routes/loanRoutes');
 const shareholderRoutes = require('./routes/shareholderRoutes');
+const auditLogRoutes = require('./routes/auditLogRoutes');
 
 // Env config
 dotenv.config();
@@ -29,11 +31,15 @@ app.use('/api/auth', authRoutes);  // Routes for Authentication
 app.use('/api/users', userRoutes); // Routes for Users(All)
 app.use('/api/loans', loanRoutes); // Routes for Loans Management
 app.use('/api/shareholders', shareholderRoutes); // Routes for Loans Management
+app.use('/api/logs', auditLogRoutes); // Routes for Loans Management
 
 // Root Routes
 app.get('/', (req, res) => {
     res.send('Welcome to Elinsas API');
 });
+
+// Initialize your scheduler
+// scheduler.start();
 
 // Start server
 const PORT = process.env.PORT || 5523;

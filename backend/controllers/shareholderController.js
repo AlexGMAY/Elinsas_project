@@ -1,4 +1,5 @@
 const Shareholder = require('../models/Shareholder');
+// const { sendSmsNotification, sendEmailNotification } = require('../utils/sendNotification');
 
 // Register Shareholder
 exports.registerShareholder = async (req, res) => {
@@ -82,6 +83,31 @@ exports.recordContribution = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
+// Notify Shareholders of their contribution
+exports.notifyShareholderContribution = async (req, res) => {
+  const { shareholderId } = req.params;
+
+  try {
+    const shareholder = await Shareholder.findById(shareholderId);
+    if (!shareholder) {
+      return res.status(404).json({ message: 'Shareholder not found' });
+    }
+
+    const message = `Dear ${shareholder.name}, your monthly contribution of ${shareholder.contributions} is due.`;
+
+    // Send SMS
+    await sendSmsNotification(shareholder.phone, message);
+
+    // Send Email
+    await sendEmailNotification(shareholder.email, 'Contribution Reminder', message);
+
+    res.status(200).json({ message: 'Notifications sent successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 // Update Shares Owned
 exports.updateSharesOwned = async (req, res) => {
