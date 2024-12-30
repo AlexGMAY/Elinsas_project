@@ -9,6 +9,7 @@ const connectDB = require('./config/dbConfig');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const loanRoutes = require('./routes/loanRoutes');
+const shareholderRoutes = require('./routes/shareholderRoutes');
 
 // Env config
 dotenv.config();
@@ -25,8 +26,9 @@ connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);  // Routes for Authentication
-app.use('/api/users', userRoutes); // Routes for Users(Customers)
+app.use('/api/users', userRoutes); // Routes for Users(All)
 app.use('/api/loans', loanRoutes); // Routes for Loans Management
+app.use('/api/shareholders', shareholderRoutes); // Routes for Loans Management
 
 // Root Routes
 app.get('/', (req, res) => {

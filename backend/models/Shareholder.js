@@ -6,7 +6,7 @@ const shareholderSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true, // Link to the user account
+    required: false, // Link to the user account
   },
   firstName: {
     type: String,

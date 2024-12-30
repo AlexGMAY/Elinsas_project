@@ -1,0 +1,26 @@
+exports.validateFilterQuery = (req, res, next) => {
+    const { group, name } = req.query;
+
+    if (!group && !name) {
+        return res.status(400).json({
+            message: 'At least one query parameter (group or name) is required',
+        });
+    }
+
+    // Optional: Validate that name is a string
+    if (name && typeof name !== 'string') {
+        return res.status(400).json({
+            message: 'Name query parameter must be a string',
+        });
+    }
+
+    // Optional: Validate that group matches specific values
+    const validGroups = ['Gold', 'Silver', 'Bronze'];
+    if (group && !validGroups.includes(group)) {
+        return res.status(400).json({
+            message: `Group query parameter must be one of: ${validGroups.join(', ')}`,
+        });
+    }
+
+    next();
+};

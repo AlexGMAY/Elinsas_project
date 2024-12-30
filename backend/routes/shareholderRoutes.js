@@ -16,6 +16,7 @@ const {
 } = require('../controllers/shareholderController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 const { checkRole } = require('../middlewares/roleMiddleware');
+const { validateQueryParams } = require('../middlewares/validateQueryParams');
 
 const router = express.Router();
 
@@ -29,12 +30,12 @@ router.put('/assign-group', verifyToken, checkRole(['Admin']), assignGroup);
 
 // Shareholder Data Retrieval Endpoints
 router.get('/:shareholderId', verifyToken, checkRole(['Admin', 'Shareholder']), getShareholderDetails);
-router.get('/all', verifyToken, checkRole(['Admin']), getAllShareholders);
-router.get('/filter', verifyToken, checkRole(['Admin']), getShareholders);
+router.get('/', verifyToken, checkRole(['Admin']), getAllShareholders);
+router.get('/filter', verifyToken, checkRole(['Admin']), getShareholders); // didnt work - to be retested
 
 // Shareholder Search and Filter Endpoints
-router.get('/filter-by-group', verifyToken, checkRole(['Admin']), filterShareholdersByGroup);
-router.get('/search-by-name', verifyToken, checkRole(['Admin']), searchShareholdersByName);
+router.get('/filter-by-group', verifyToken, checkRole(['Admin']), validateQueryParams(['group']), filterShareholdersByGroup); // to be retested
+router.get('/search-by-name', verifyToken, checkRole(['Admin']),  validateQueryParams(['name']), searchShareholdersByName); // to be retested
 
 // Shareholder Modification Endpoints
 router.put('/:shareholderId', verifyToken, checkRole(['Admin']), updateShareholder);

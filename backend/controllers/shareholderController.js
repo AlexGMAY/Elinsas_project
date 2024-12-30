@@ -181,26 +181,29 @@ exports.getAllShareholders = async (req, res) => {
 
 // Get All Shareholders with Filters
 exports.getShareholders = async (req, res) => {
-    const { group, name } = req.query; // Group and name are passed as optional query parameters
-    const filter = {};
-  
-    if (group) filter.group = group;
-    if (name) {
+  const { group, name } = req.query;
+  const filter = {};
+
+  if (group) filter.group = group; // Filter by group if provided
+  if (name) {
       filter.$or = [
-        { firstName: { $regex: name, $options: 'i' } },
-        { lastName: { $regex: name, $options: 'i' } },
-        { surname: { $regex: name, $options: 'i' } },
+          { firstName: { $regex: name, $options: 'i' } },
+          { lastName: { $regex: name, $options: 'i' } },
+          { surname: { $regex: name, $options: 'i' } },
       ];
-    }
-  
-    try {
+  }
+
+  try {
       const shareholders = await Shareholder.find(filter);
+      if (shareholders.length === 0) {
+          return res.status(404).json({ message: 'No shareholders found with the given filters' });
+      }
       res.status(200).json({ shareholders });
-    } catch (err) {
+  } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
-    }
+  }
 };
-  
+
 
 // Update Shareholder
 exports.updateShareholder = async (req, res) => {
@@ -243,39 +246,48 @@ exports.deleteShareholder = async (req, res) => {
   
 // Filter Shareholders by Group
 exports.filterShareholdersByGroup = async (req, res) => {
-    const { group } = req.query; // Group is passed as a query parameter
-  
-    try {
+  const { group } = req.query;
+
+  if (!group) {
+      return res.status(400).json({ message: 'Group query parameter is required' });
+  }
+
+  try {
       const shareholders = await Shareholder.find({ group });
       if (shareholders.length === 0) {
-        return res.status(404).json({ message: `No shareholders found in group ${group}` });
+          return res.status(404).json({ message: `No shareholders found in group ${group}` });
       }
       res.status(200).json({ shareholders });
-    } catch (err) {
+  } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
-    }
+  }
 };
+
  
 // Search Shareholders by Name
 exports.searchShareholdersByName = async (req, res) => {
-    const { name } = req.query; // Name is passed as a query parameter
-  
-    try {
+  const { name } = req.query;
+
+  if (!name) {
+      return res.status(400).json({ message: 'Name query parameter is required' });
+  }
+
+  try {
       const shareholders = await Shareholder.find({
-        $or: [
-          { firstName: { $regex: name, $options: 'i' } },
-          { lastName: { $regex: name, $options: 'i' } },
-          { surname: { $regex: name, $options: 'i' } },
-        ],
+          $or: [
+              { firstName: { $regex: name, $options: 'i' } },
+              { lastName: { $regex: name, $options: 'i' } },
+              { surname: { $regex: name, $options: 'i' } },
+          ],
       });
-  
+
       if (shareholders.length === 0) {
-        return res.status(404).json({ message: 'No shareholders found with the given name' });
+          return res.status(404).json({ message: 'No shareholders found with the given name' });
       }
-  
+
       res.status(200).json({ shareholders });
-    } catch (err) {
+  } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
-    }
+  }
 };
 
